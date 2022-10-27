@@ -19,11 +19,15 @@ func TestBox(t *testing.T) {
 	key, _ := crypto.GenerateKey()
 	auth := bind.NewKeyedTransactor(key)
 
+	auth.GasPrice = big.NewInt(875000000)
+
+	fmt.Printf("%+v\n", auth)
+
 	gAlloc := map[common.Address]core.GenesisAccount{
-		auth.From: {Balance: big.NewInt(10000000000)},
+		auth.From: {Balance: big.NewInt(1000000000000000000)},
 	}
 
-	sim := backends.NewSimulatedBackend(gAlloc, 1000000)
+	sim := backends.NewSimulatedBackend(gAlloc, 10000000)
 
 	_, _, box, err := DeployBox(auth, sim)
 	require.NoError(t, err)
@@ -36,7 +40,7 @@ func TestBox(t *testing.T) {
 	transOpts := &bind.TransactOpts{
 		From: auth.From,
 		Signer: auth.Signer,
-		GasLimit: 123456,
+		GasPrice: big.NewInt(875_000_000),
 	}
 	tx, err := box.Store(transOpts, val)
 	require.NoError(t, err)
